@@ -3,6 +3,7 @@ module github.com/stonear/api_gateway
 go 1.20
 
 require (
+	github.com/julienschmidt/httprouter v1.3.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/sirupsen/logrus v1.9.0
 	gorm.io/driver/postgres v1.5.0

@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/julienschmidt/httprouter"
 	"github.com/sirupsen/logrus"
 )
 
@@ -24,7 +25,7 @@ type server struct {
 	handler http.Handler
 }
 
-func New(log *logrus.Logger, port string, mux *http.ServeMux) *server {
+func New(log *logrus.Logger, port string, mux *httprouter.Router) *server {
 	handler := logRequest(log, mux)
 	return &server{
 		log:     log,
@@ -33,7 +34,7 @@ func New(log *logrus.Logger, port string, mux *http.ServeMux) *server {
 	}
 }
 
-func logRequest(log *logrus.Logger, mux *http.ServeMux) http.Handler {
+func logRequest(log *logrus.Logger, mux *httprouter.Router) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		httpLog := &HttpLog{
 			ResponseWriter: writer,

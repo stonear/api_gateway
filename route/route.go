@@ -7,12 +7,13 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/julienschmidt/httprouter"
 	"github.com/sirupsen/logrus"
 	"github.com/stonear/api_gateway/model"
 )
 
-func New(log *logrus.Logger, routes []model.Route) *http.ServeMux {
-	mux := http.NewServeMux()
+func New(log *logrus.Logger, routes []model.Route) *httprouter.Router {
+	mux := httprouter.New()
 	for _, r := range routes {
 		target, err := url.JoinPath(r.TargetService, r.TargetPath)
 		if err != nil {
@@ -20,16 +21,10 @@ func New(log *logrus.Logger, routes []model.Route) *http.ServeMux {
 		}
 		log.Infoln("register", r.Method, r.RequestPath, "->", target)
 
-		mux.HandleFunc(r.RequestPath, func(writer http.ResponseWriter, request *http.Request) {
+		mux.HandlerFunc(r.Method, r.RequestPath, func(writer http.ResponseWriter, request *http.Request) {
 			url, err := url.Parse(target)
 			if err != nil {
 				log.Errorln(err)
-				return
-			}
-
-			// method check here
-			if request.Method != r.Method {
-				writer.WriteHeader(http.StatusNotFound)
 				return
 			}
 
